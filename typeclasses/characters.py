@@ -9,18 +9,44 @@ creation commands.
 """
 
 from evennia.objects.objects import DefaultCharacter
+from evennia.contrib.rpg.traits import TraitHandler
+from evennia.utils import lazy_property
 
 from .objects import ObjectParent
 
 
-class Character(ObjectParent, DefaultCharacter):
+class BaseCharacter(ObjectParent, DefaultCharacter):
     """
-    The Character just re-implements some of the Object's methods and hooks
-    to represent a Character entity in-game.
-
-    See mygame/typeclasses/objects.py for a list of
-    properties and methods available on all Object child classes like this.
+    The base character that PCs and NPCs will inherit functionality and attributes from.
 
     """
 
-    pass
+    is_player = False
+
+    @lazy_property
+    def stats(self):
+        return TraitHandler(self, db_attribute_key="stats")
+    
+    @lazy_property
+    def skills(self):
+        return TraitHandler(self, db_attribute_key="skills")
+    
+    def at_object_creation(self):
+        """
+        Initialize all general stats.
+        """
+        self.stats.add("hp", "Health", trait_type="gauge", base=100, min=0)
+    
+
+class Player(BaseCharacter):
+    """
+    Player character specific functionality and attributes.
+    """
+    is_player = True
+
+class NPC(BaseCharacter):
+    """
+    NPC character specific functionality and attributes.
+    """
+    is_player = False
+
