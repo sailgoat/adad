@@ -11,7 +11,7 @@ creation commands.
 from evennia.objects.objects import DefaultCharacter
 from evennia.contrib.rpg.traits import TraitHandler
 from evennia.utils import lazy_property
-
+from typeclasses.handlers.equipment import EquipmentHandler
 from .objects import ObjectParent
 
 
@@ -30,6 +30,10 @@ class BaseCharacter(ObjectParent, DefaultCharacter):
     @lazy_property
     def skills(self):
         return TraitHandler(self, db_attribute_key="skills")
+    
+    @lazy_property
+    def equipment(self):
+        return EquipmentHandler(self)
     
     def at_object_creation(self):
         """
